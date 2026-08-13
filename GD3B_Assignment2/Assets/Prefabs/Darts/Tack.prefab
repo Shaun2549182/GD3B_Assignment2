@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 7349764654162325149}
   - component: {fileID: 2669000404966130247}
   m_Layer: 0
-  m_Name: Dart
+  m_Name: Tack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -95,8 +95,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 20
   damage: 1
-  pierce: 2
-  lifeTime: 0.5
+  pierce: 1
+  lifeTime: 0.1
   targetTag: Bloon
 --- !u!1 &3260045340675825363
 GameObject:
