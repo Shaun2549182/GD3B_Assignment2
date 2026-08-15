@@ -5,12 +5,12 @@ using Unity.VisualScripting;
 
 public class PlayerHealthController : MonoBehaviour
 {
-    int health = 100;
+    int health = 999;
     public TextMeshProUGUI healthText;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        healthText.text = "100";
+        healthText.text = "999";
     }
 
     private void OnTriggerEnter2D(Collider2D other)

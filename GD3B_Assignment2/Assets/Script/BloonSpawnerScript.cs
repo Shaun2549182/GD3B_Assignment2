@@ -1,91 +1,182 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Splines;
+using TMPro;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class BloonSpawnerScript : MonoBehaviour
 {
-    public GameObject bloonPrefab;
-    public SplineContainer splineContainer;
-    public float delayInSeconds = 1.0f;
-    public Button startButton;
+    public static BloonSpawnerScript Instance { get; private set; }
 
-    public void FirstRound()
+    [System.Serializable]
+    public struct WaveDefinition
     {
-        SpawnRedBloon();
-        LeanTween.delayedCall(0.2f, SpawnRedBloon);
-        LeanTween.delayedCall(0.4f, SpawnRedBloon);
-        LeanTween.delayedCall(0.6f, SpawnRedBloon);
-        LeanTween.delayedCall(1.35f, SpawnBlueBloon);
-        LeanTween.delayedCall(1.55f, SpawnBlueBloon);
-        LeanTween.delayedCall(1.75f, SpawnBlueBloon);
-        LeanTween.delayedCall(2.5f, SpawnGreenBloon);
-        LeanTween.delayedCall(2.7f, SpawnGreenBloon);
-        LeanTween.delayedCall(2.9f, SpawnGreenBloon);
-        LeanTween.delayedCall(4.9f, FirstRound);
+        public int redCount;
+        public int blueCount;
+        public int greenCount;
     }
 
-    public void DisableButton()
+    private struct EnemyData
     {
-        startButton.interactable = false;
-    }
+        public Color color;
+        public int health;
 
-    public void SpawnRedBloon()
-    {
-        GameObject instance = Instantiate(bloonPrefab, transform.position, Quaternion.identity);
-        SpriteRenderer[] childRenderers = instance.GetComponentsInChildren<SpriteRenderer>();
-        foreach (SpriteRenderer sr in childRenderers)
+        public EnemyData(Color color, int health)
         {
-            sr.color = Color.red;
+            this.color = color;
+            this.health = health;
+        }
+    }
+
+    [SerializeField] private GameObject prefabToSpawn;
+    [SerializeField] private SplineContainer splineContainer;
+    [SerializeField] private TextMeshProUGUI waveText;
+    [SerializeField] private Button roundStartButton;
+
+    private float spawnInterval = 0.25f;
+    private float groupPauseInterval = 1.25f;
+    private float waveStartDelay = 3.0f;
+    private float waveEndDelay = 3.0f;
+
+    private readonly WaveDefinition[] exponentialWaves = new WaveDefinition[]
+     {
+        new WaveDefinition { redCount = 20, blueCount = 0,  greenCount = 0  },
+        new WaveDefinition { redCount = 15, blueCount = 6,  greenCount = 0  },
+        new WaveDefinition { redCount = 18, blueCount = 9,  greenCount = 0  },
+        new WaveDefinition { redCount = 11, blueCount = 7,  greenCount = 8  },
+        new WaveDefinition { redCount = 15, blueCount = 9,  greenCount = 11 },
+        new WaveDefinition { redCount = 19, blueCount = 13, greenCount = 15 },
+        new WaveDefinition { redCount = 0,  blueCount = 29, greenCount = 21 },
+        new WaveDefinition { redCount = 0,  blueCount = 38, greenCount = 29 },
+        new WaveDefinition { redCount = 0,  blueCount = 52, greenCount = 39 },
+        new WaveDefinition { redCount = 0,  blueCount = 68, greenCount = 54 }
+     };
+
+    private readonly WaveDefinition[] linearWaves = new WaveDefinition[]
+    {
+        new WaveDefinition { redCount = 20, blueCount = 0,  greenCount = 0  },
+        new WaveDefinition { redCount = 20, blueCount = 10, greenCount = 0  },
+        new WaveDefinition { redCount = 12, blueCount = 9,  greenCount = 10 },
+        new WaveDefinition { redCount = 17, blueCount = 12, greenCount = 13 },
+        new WaveDefinition { redCount = 22, blueCount = 15, greenCount = 16 },
+        new WaveDefinition { redCount = 24, blueCount = 18, greenCount = 20 },
+        new WaveDefinition { redCount = 0,  blueCount = 34, greenCount = 24 },
+        new WaveDefinition { redCount = 0,  blueCount = 38, greenCount = 28 },
+        new WaveDefinition { redCount = 0,  blueCount = 42, greenCount = 32 },
+        new WaveDefinition { redCount = 0,  blueCount = 46, greenCount = 36 }
+    };
+
+    private WaveDefinition[] activeWaves;
+    private Queue<EnemyData> currentWaveQueue = new Queue<EnemyData>();
+    private int currentWaveIndex = -1;
+    private int activePrefabsCount = 0;
+    private int groupSpawnCount = 0;
+
+    private void Awake()
+    {
+        if (Instance == null) Instance = this;
+        else Destroy(gameObject);
+
+        string activeSceneName = SceneManager.GetActiveScene().name;
+
+        if (activeSceneName == "Exponential")
+        {
+            activeWaves = exponentialWaves;
+        }
+        else if (activeSceneName == "Linear")
+        {
+            activeWaves = linearWaves;
+        }
+        else
+        {
+            return;
+        }
+    }
+
+
+    public void StartNextWave()
+    {
+        if (roundStartButton != null)
+        {
+            roundStartButton.interactable = false;
         }
 
-        if (instance.TryGetComponent<BloonHealthController>(out BloonHealthController bloonHealth))
+        currentWaveIndex++;
+
+        if (currentWaveIndex >= activeWaves.Length)
         {
-            bloonHealth.SetBloonHealth(1);
+            //here will go game end screen
+            return;
+        }
+
+        if (waveText != null)
+        {
+            waveText.text = $"Round {currentWaveIndex + 1}";
+        }
+
+        BuildWaveQueue(activeWaves[currentWaveIndex]);
+        groupSpawnCount = 0;
+
+        LeanTween.delayedCall(gameObject, waveStartDelay, SpawnNextInWave);
+    }
+
+    private void BuildWaveQueue(WaveDefinition wave)
+    {
+        currentWaveQueue.Clear();
+
+        for (int i = 0; i < wave.redCount; i++)
+            currentWaveQueue.Enqueue(new EnemyData(Color.red, 1));
+
+        for (int i = 0; i < wave.blueCount; i++)
+            currentWaveQueue.Enqueue(new EnemyData(Color.blue, 2));
+
+        for (int i = 0; i < wave.greenCount; i++)
+            currentWaveQueue.Enqueue(new EnemyData(Color.green, 3));
+    }
+
+    private void SpawnNextInWave()
+    {
+        if (currentWaveQueue.Count == 0) return;
+
+        EnemyData enemy = currentWaveQueue.Dequeue();
+
+
+        GameObject instance = Instantiate(prefabToSpawn, transform.position, Quaternion.identity);
+        activePrefabsCount++;
+        groupSpawnCount++;
+
+        SpriteRenderer[] renderers = instance.GetComponentsInChildren<SpriteRenderer>();
+        foreach (SpriteRenderer sr in renderers)
+        {
+            sr.color = enemy.color;
+        }
+
+        if (instance.TryGetComponent<BloonHealthController>(out BloonHealthController health))
+        {
+            health.SetBloonHealth(enemy.health);
         }
 
         if (instance.TryGetComponent<BloonMovementScript>(out BloonMovementScript follower))
         {
             follower.Initialize(splineContainer);
         }
-    }
 
-    public void SpawnBlueBloon()
-    {
-        GameObject instance = Instantiate(bloonPrefab, transform.position, Quaternion.identity);
-        SpriteRenderer[] childRenderers = instance.GetComponentsInChildren<SpriteRenderer>();
-        foreach (SpriteRenderer sr in childRenderers)
+        if (currentWaveQueue.Count > 0)
         {
-            sr.color = Color.blue;
-        }
-
-        if (instance.TryGetComponent<BloonHealthController>(out BloonHealthController bloonHealth))
-        {
-            bloonHealth.SetBloonHealth(2);
-        }
-
-        if (instance.TryGetComponent<BloonMovementScript>(out BloonMovementScript follower))
-        {
-            follower.Initialize(splineContainer);
+            float nextDelay = (groupSpawnCount % 10 == 0) ? groupPauseInterval : spawnInterval;
+            LeanTween.delayedCall(gameObject, nextDelay, SpawnNextInWave);
         }
     }
 
-    public void SpawnGreenBloon()
+    public void OnBloonsDestroyed()
     {
-        GameObject instance = Instantiate(bloonPrefab, transform.position, Quaternion.identity);
-        SpriteRenderer[] childRenderers = instance.GetComponentsInChildren<SpriteRenderer>();
-        foreach (SpriteRenderer sr in childRenderers)
-        {
-            sr.color = Color.green;
-        }
+        activePrefabsCount--;
 
-        if (instance.TryGetComponent<BloonHealthController>(out BloonHealthController bloonHealth))
+        if (currentWaveQueue.Count == 0 && activePrefabsCount <= 0)
         {
-            bloonHealth.SetBloonHealth(3);
-        }
-
-        if (instance.TryGetComponent<BloonMovementScript>(out BloonMovementScript follower))
-        {
-            follower.Initialize(splineContainer);
+            LeanTween.delayedCall(gameObject, waveEndDelay, StartNextWave);
         }
     }
 }

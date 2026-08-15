@@ -38,9 +38,15 @@ public class BloonHealthController : MonoBehaviour
         else if (bloonHealth == 0)
         {
             Destroy(gameObject);
-        }
+        }   
+    }
 
-            
+    private void OnDestroy()
+    {
+        if (BloonSpawnerScript.Instance != null)
+        {
+            BloonSpawnerScript.Instance.OnBloonsDestroyed();
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -48,6 +54,12 @@ public class BloonHealthController : MonoBehaviour
         if (collision.gameObject.CompareTag("Bullet"))
         {
             bloonHealth -= 1;
+        }
+
+
+        if (collision.gameObject.CompareTag("End"))
+        {
+            bloonHealth = 0;
         }
     }
     public void SetBloonHealth(int health)
