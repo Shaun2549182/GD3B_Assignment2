@@ -55,6 +55,6 @@ public class Dart : MonoBehaviour
         }
 
         //test \/
-        Destroy(other.gameObject);
+        //Destroy(other.gameObject);
     }
 }
