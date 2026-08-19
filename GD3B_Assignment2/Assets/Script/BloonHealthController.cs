@@ -2,43 +2,58 @@ using UnityEngine;
 
 public class BloonHealthController : MonoBehaviour
 {
-    public int bloonHealth;
+    [SerializeField] private int bloonHealth = 3;
 
-    // Update is called once per frame
-    void Update()
+    private SpriteRenderer[] childRenderers;
+
+    private void Awake()
     {
-        if (bloonHealth == 3)
+        childRenderers = GetComponentsInChildren<SpriteRenderer>();
+    }
+
+    private void Start()
+    {
+        UpdateVisuals();
+    }
+
+    public void TakeDamage(int damageAmount)
+    {
+        bloonHealth -= damageAmount;
+
+        if (bloonHealth <= 0)
         {
-            SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer sr in childRenderers)
+            if (MoneyManager.Instance != null)
             {
-                sr.color = Color.green;
+                MoneyManager.Instance.AddMoney(4);
             }
-        }
 
-        else if (bloonHealth == 2)
-        {
-            SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer sr in childRenderers)
-            {
-                sr.color = Color.blue;
-
-            }
-        }
-
-        else if (bloonHealth == 1)
-        {
-            SpriteRenderer[] childRenderers = GetComponentsInChildren<SpriteRenderer>();
-            foreach (SpriteRenderer sr in childRenderers)
-            {
-                sr.color = Color.red;
-            }
-        }
-
-        else if (bloonHealth == 0)
-        {
             Destroy(gameObject);
-        }   
+        }
+        else
+        {
+            UpdateVisuals();
+        }
+    }
+
+    public void SetBloonHealth(int health)
+    {
+        bloonHealth = health;
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        if (childRenderers == null) return;
+
+        Color targetColor = Color.white;
+        if (bloonHealth == 3) targetColor = Color.green;
+        else if (bloonHealth == 2) targetColor = Color.blue;
+        else if (bloonHealth == 1) targetColor = Color.red;
+
+        foreach (SpriteRenderer sr in childRenderers)
+        {
+            if (sr != null) sr.color = targetColor;
+        }
     }
 
     private void OnDestroy()
@@ -51,24 +66,15 @@ public class BloonHealthController : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Bullet"))
+        if (collision.CompareTag("Bullet"))
         {
-            bloonHealth -= 1;
+            Dart dart = collision.GetComponentInParent<Dart>();
+            int damageToTake = (dart != null) ? Mathf.RoundToInt(dart.Damage) : 1;
+            TakeDamage(damageToTake);
         }
-
-
-        if (collision.gameObject.CompareTag("End"))
+        else if (collision.CompareTag("End"))
         {
-            bloonHealth = 0;
+            TakeDamage(bloonHealth);
         }
-    }
-    public void SetBloonHealth(int health)
-    {
-        bloonHealth = health;
-    }
-    private void Damage()
-    {
-        bloonHealth -= 1;
     }
 }
-

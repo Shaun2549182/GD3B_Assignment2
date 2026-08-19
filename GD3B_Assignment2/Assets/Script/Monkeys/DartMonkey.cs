@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 /*
     this class tells the dart monkey where and in which direction to shoot, it then summons the dart prefab
 */
@@ -20,22 +21,25 @@ public class DartMonkey : MonoBehaviour
 
     private CircleCollider2D rangeCollider;
 
-    private readonly List<BloonPathProgress> targetsInRange = new List<BloonPathProgress>();
+    private readonly List<GameObject> targetsInRange = new List<GameObject>();
 
     private float fireCooldown;
 
     private void Awake()
     {
         rangeCollider = GetComponent<CircleCollider2D>();
-        rangeCollider.isTrigger = true;
-        rangeCollider.radius = range;
+        if (rangeCollider != null)
+        {
+            rangeCollider.isTrigger = true;
+            rangeCollider.radius = range;
+        }
     }
 
     private void Update()
     {
         targetsInRange.RemoveAll(b => b == null);
 
-        BloonPathProgress target = GetFirstTarget();
+        GameObject target = GetFirstTarget();
         if (target == null)
         {
             return;
@@ -55,22 +59,14 @@ public class DartMonkey : MonoBehaviour
     }
 
     //finds the bloon which has travelled the most amount of distance (the furthest along the path)
-    private BloonPathProgress GetFirstTarget()
+    private GameObject GetFirstTarget()
     {
-        BloonPathProgress best = null;
-        float bestProgress = float.NegativeInfinity;
-
-        for (int i = 0; i < targetsInRange.Count; i++)
+        if (targetsInRange.Count > 0)
         {
-            BloonPathProgress bloon = targetsInRange[i];
-            if (bloon.DistanceTraveled > bestProgress)
-            {
-                bestProgress = bloon.DistanceTraveled;
-                best = bloon;
-            }
-        } 
+            return targetsInRange[0];
+        }
 
-        return best;
+        return null;
     }
 
     private void AimAt(Transform target)
@@ -81,7 +77,7 @@ public class DartMonkey : MonoBehaviour
         transform.rotation = Quaternion.RotateTowards(transform.rotation, targetRot, rotationSpeed * Time.deltaTime);
     }
 
-    private void Shoot(BloonPathProgress target)
+    private void Shoot(GameObject target)
     {
         if (dartPrefab == null) return;
 
@@ -104,7 +100,7 @@ public class DartMonkey : MonoBehaviour
             return;
         }
 
-        BloonPathProgress bloon = other.GetComponent<BloonPathProgress>();
+        GameObject bloon = other.gameObject;
         if (bloon != null && !targetsInRange.Contains(bloon))
         {
             targetsInRange.Add(bloon);
@@ -118,7 +114,7 @@ public class DartMonkey : MonoBehaviour
             return;
         }
 
-        BloonPathProgress bloon = other.GetComponent<BloonPathProgress>();
+        GameObject bloon = other.gameObject;
         if (bloon != null)
         {
             targetsInRange.Remove(bloon);

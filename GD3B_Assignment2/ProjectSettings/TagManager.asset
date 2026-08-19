@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Bloon
   - End
+  - Bullet
   layers:
   - Default
   - TransparentFX

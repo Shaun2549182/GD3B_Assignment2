@@ -148,8 +148,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 1, g: 0, b: 0.9451575, a: 1}
+  m_Sprite: {fileID: -1368228258067415000, guid: 136cda1f28b47364598b7d8ae9c4429f, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -210,7 +210,7 @@ MonoBehaviour:
   targetTag: Bloon
   range: 2
   tackPrefab: {fileID: 664373791146151422, guid: 0c8744dfff5bf944b8436d44a94150bf, type: 3}
-  attackCooldown: 1.12
+  attackCooldown: 3
   tackCount: 8
   rotationOffset: 0
 --- !u!58 &7716387354204405643

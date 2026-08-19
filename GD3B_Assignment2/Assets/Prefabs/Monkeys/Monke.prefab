@@ -148,8 +148,8 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
-  m_Color: {r: 0.509434, g: 0.2118173, b: 0, a: 1}
+  m_Sprite: {fileID: 1517135098088389448, guid: b652be0dd9b43504a941226528fbeef6, type: 3}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -175,7 +175,7 @@ MonoBehaviour:
   range: 3.35
   dartPrefab: {fileID: 664373791146151422, guid: 373edbe59a30c564fbfe7b2a23ad8935, type: 3}
   firePoint: {fileID: 4083224868964068093}
-  attackCooldown: 0.95
+  attackCooldown: 0.45
   rotateTowardsTarget: 1
   rotationSpeed: 720
 --- !u!58 &5658615193705044048

@@ -3,26 +3,23 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    public void LoadLinear()
     {
-        
+        SceneManager.LoadScene("Linear");
     }
 
-    // Update is called once per frame
-    void Update()
+    public void LoadExponential()
     {
-        
+        SceneManager.LoadScene("Exponential");
     }
 
-    public void LoadGame()
+    public void LoadMainMenu()
     {
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene("Main Menu");
     }
 
     public void QuitGame()
     {
         Application.Quit();
     }
-    
 }

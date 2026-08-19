@@ -107,13 +107,16 @@ public class BloonSpawnerScript : MonoBehaviour
 
         if (currentWaveIndex >= activeWaves.Length)
         {
-            //here will go game end screen
+            LeanTween.delayedCall(gameObject, 3.0f, () =>
+            {
+                SceneManager.LoadScene("Win");
+            });
             return;
         }
 
         if (waveText != null)
         {
-            waveText.text = $"Round {currentWaveIndex + 1}";
+            waveText.text = $"Round {currentWaveIndex + 1} of 10";
         }
 
         BuildWaveQueue(activeWaves[currentWaveIndex]);

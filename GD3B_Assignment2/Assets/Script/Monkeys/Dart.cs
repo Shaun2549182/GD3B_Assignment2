@@ -9,6 +9,7 @@ public class Dart : MonoBehaviour
     [SerializeField] private float lifeTime = 2f;
     [SerializeField] private string targetTag = "Bloon";
 
+    public float Damage => damage;
     private Vector2 travelDirection;
     private bool fired;
 
