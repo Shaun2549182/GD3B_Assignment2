@@ -386,12 +386,12 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1126902511}
-  - {fileID: 1841710561}
-  - {fileID: 2095262258}
   - {fileID: 460991134}
   - {fileID: 1924995387}
   - {fileID: 284267890}
+  - {fileID: 1126902511}
+  - {fileID: 1841710561}
+  - {fileID: 2095262258}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -528,7 +528,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 3
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 32
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -665,7 +665,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 3
-  m_HorizontalAlignment: 1
+  m_HorizontalAlignment: 32
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -900,7 +900,7 @@ GameObject:
   - component: {fileID: 1841710563}
   - component: {fileID: 1841710562}
   m_Layer: 5
-  m_Name: 'Play buton '
+  m_Name: LinearButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1110,7 +1110,7 @@ MonoBehaviour:
   m_fontSizeMin: 18
   m_fontSizeMax: 72
   m_fontStyle: 3
-  m_HorizontalAlignment: 2
+  m_HorizontalAlignment: 32
   m_VerticalAlignment: 256
   m_textAlignment: 65535
   m_characterSpacing: 0
@@ -1169,7 +1169,7 @@ GameObject:
   - component: {fileID: 2095262260}
   - component: {fileID: 2095262259}
   m_Layer: 5
-  m_Name: Play buton  (1)
+  m_Name: ExpoButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
